@@ -60,12 +60,47 @@ class Renderer(object):
         self.pixels = [[self.clearColor for y in range(self.height)]
                        for x in range(self.width)]
         
-    def glTriangle(self, v0, v1, v2, clr = None):
+    # def glTriangle(self, A, B, C, clr = None):
         
-        self.glLine(v0,v1,clr or self.currColor)
-        self.glLine(v1,v2,clr or self.currColor)
-        self.glLine(v2,v0,clr or self.currColor)
+    #     if A[1] < B[1]:
+    #         A, B = B, A
+    #     if A[1] < C[1]:
+    #         A, C = C, A            
+    #     if B[1] < C[1]:
+    #         B,C = C, B
+            
+    #     self.glLine(A,B,clr or self.currColor)
+    #     self.glLine(B,C,clr or self.currColor)
+    #     self.glLine(C,A,clr or self.currColor)
         
+    #     def flatbottom(A, B, C):
+    #         try:
+    #             mBA = (B[0]-A[0])/(B[1]-A[1])
+    #             mCA = (C[0]-A[1])/(C[1]-A[1])    
+    #         except :
+    #             pass
+    #         else:
+    #             x0= B[0]
+    #             x1= C[0] 
+                
+    #             for i in range (B[1], A[1]):
+    #                 self.glLine((x0,y), (x1,y))
+    #                 x0+= mBA
+    #                 x1+= mCA 
+                     
+    #     if B[1] == C[1]:
+    #         flatbottom()
+    #         pass
+        
+    #     elif A[1]==B[1]:
+    #         pass
+        
+    #     else:
+    #         #Dibujar ambos casos con un nuevo vertice D
+    #         pass
+            
+        
+            
     def glPoint(self, x, y, clr = None):
         if (0 <= x < self.width) and (0 <= y < self.height):
             self.pixels[x][y]=clr or self.currColor
@@ -190,11 +225,63 @@ class Renderer(object):
 
 
     def glPoligono(self, vertices, clr=None):
+        # Dibuja las líneas que conectan los vértices del polígono
         for i in range(len(vertices)):
             self.glLine(vertices[i], vertices[(i + 1) % len(vertices)], clr or self.currColor)
 
-        #self.glScanlineFill(vertices, clr or self.currColor)
+        # Rellena el polígono
+        self.glFill(vertices, clr or self.currColor)
 
+
+    
+    def glFill(self, vertices,clr=None):
+        
+        # Encuentra las coordenadas mínimas y máximas en el eje x
+        minX=min(vertices, key=lambda v: v[0])[0]
+        maxX= max(vertices, key=lambda v: v[0])[0]
+        
+        # Encuentra las coordenadas mínimas y máximas en el eje y
+        minY = min(vertices, key=lambda v: v[1])[1]
+        maxY = max(vertices, key=lambda v: v[1])[1]
+        
+        # Itera sobre los puntos dentro del área delimitada por el polígono
+        for x in range(minX, maxX + 1):
+            for y in range(minY, maxY + 1):
+                # Comprueba si el punto (x, y) está dentro del polígono y pinta el punto
+                if self.esPunto(x, y, vertices):
+                    self.glPoint(x, y,clr)
+
+
+    def esPunto(self, x, y, vertices):
+        n = len(vertices)
+        adentro = False
+        vertices[0]
+        
+        # Punto inicial del segmento
+        p1x, p1y = vertices[0]
+        for i in range(n + 1):
+            # Punto final del segmento
+            p2x, p2y = vertices[i % n]
+            
+            #Mira si el punto está encima del segmento
+            if y > min(p1y, p2y):
+                #Si el punto está debajo o en el segmento
+                if y <= max(p1y, p2y):
+                    #Si el punto está a la izquierda del segmento
+                    if x <= max(p1x, p2x):
+                        #Mira que el segmento no sea vertical
+                        if p1y != p2y:
+                            # Calcula la intersección en el eje x entre la línea horizontal y el segmento
+                            xinters = (y-p1y) * (p2x-p1x) / (p2y -p1y) + p1x
+                        #Mira si el punto esta a la izquierda o al nivel de la intersección
+                        if p1x == p2x or x<= xinters:
+                            #Cambia el estado
+                            adentro = not adentro
+            #Actualiza para la otra iteración (siguiente punto)
+            p1x, p1y = p2x, p2y 
+            
+        #Regresa  si está adentro del poligono    
+        return adentro              
 
     def glRender(self):
         
