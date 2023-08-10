@@ -1,8 +1,6 @@
 import struct
 from matrix import  Multi
 from math import pi, sin, cos, tan
-import numpy as np
-from collections import namedtuple
 from obj import Obj
 from texture import Texture
 
