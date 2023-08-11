@@ -1,9 +1,8 @@
 import struct
-from matrix import  Multi
+from matrix import Multi
 from math import pi, sin, cos, tan
 from obj import Obj
 from texture import Texture
-
 
 POINTS = 0
 LINES = 1
@@ -52,7 +51,7 @@ class Renderer(object):
         self.width = width
         self.height = height
 
-        self.glClearColor(0.5,0.5,0.5)
+        self.glClearColor(0,0,0)
         self.glClear()
 
         self.glColor(1,1,1)
@@ -69,6 +68,8 @@ class Renderer(object):
         self.glViewPort(0,0,self.width,self.height)
         self.glCamMatrix()
         self.glProjectionMatrix()
+        
+        #self.directionalLight = (1,0,0)
 
     
     def glClearColor(self, r, g, b):
@@ -139,9 +140,12 @@ class Renderer(object):
                                    u * vtA[1] + v * vtB[1] + w * vtC[1])
 
                             # Si contamos un Fragment Shader, obtener el color de ahí.
-                            # Si no, usar el color preestablecido.
+                            # Sino, usar el color preestablecido.
                             if self.fragmentShader != None:
                                 # Mandar los parámetros necesarios al shader
+                                
+                                #triangleNormal = self.fragmentShader
+                                
                                 colorP = self.fragmentShader(texCoords = uvs,
                                                              texture = self.activeTexture)
 
@@ -424,7 +428,6 @@ class Renderer(object):
             if self.primitiveType ==  TRIANGLES:
                 self.glTriangle(prim[0], prim[1], prim[2],
                                 prim[3], prim[4], prim[5])
-                print("triangulo ", primitives.index(prim) )
         
 
 
