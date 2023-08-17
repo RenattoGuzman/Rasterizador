@@ -115,3 +115,11 @@ class Multi:
 
         multi = (rx, ry, rz)
         return multi
+    
+    def productoPunto(v1, v2):
+            if len(v1) != 3 or len(v2) != 3:
+                print("Los vectores deben tener tres componentes cada uno.")
+            
+            producto = sum(component1 * component2 for component1, component2 in zip(v1, v2))
+            
+            return producto

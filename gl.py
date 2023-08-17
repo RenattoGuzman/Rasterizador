@@ -69,7 +69,7 @@ class Renderer(object):
         self.glCamMatrix()
         self.glProjectionMatrix()
         
-        #self.directionalLight = (1,0,0)
+        self.directionalLight = (1,0,0)
 
     
     def glClearColor(self, r, g, b):
@@ -101,10 +101,13 @@ class Renderer(object):
             self.pixels[x][y] = clr or self.currColor
 
 
-    def glTriangle(self, A, B, C, vtA, vtB, vtC):
+    def glTriangle(self, verts, texCoords,normals):
         # Rederización de un triángulo usando coordenadas baricéntricas.
         # Se reciben los vertices A, B y C y las coordenadas de
         # textura vtA, vtB y vtC
+        A= verts[0]
+        B= verts[1]
+        C= verts[2]
 
         # Bounding box
         minX = round(min(A[0], B[0], C[0]))
@@ -135,19 +138,20 @@ class Renderer(object):
                             # Guardamos este valor de Z en el Z Buffer
                             self.zbuffer[x][y] = z
 
-                            # Calcular las UVs del pixel usando las coordenadas baricéntricas.
-                            uvs = (u * vtA[0] + v * vtB[0] + w * vtC[0],
-                                   u * vtA[1] + v * vtB[1] + w * vtC[1])
-
+                
                             # Si contamos un Fragment Shader, obtener el color de ahí.
                             # Sino, usar el color preestablecido.
                             if self.fragmentShader != None:
                                 # Mandar los parámetros necesarios al shader
                                 
-                                #triangleNormal = self.fragmentShader
                                 
-                                colorP = self.fragmentShader(texCoords = uvs,
-                                                             texture = self.activeTexture)
+                                
+                                colorP = self.fragmentShader(texture = self.activeTexture,
+                                                             texCoords = texCoords,
+                                                             normals = normals,
+                                                             dLight = self.directionalLight,
+                                                             bCoords = bCoords)
+
 
                                 self.glPoint(x, y, color(colorP[0], colorP[1], colorP[2]))
                                 
@@ -155,31 +159,31 @@ class Renderer(object):
                                 self.glPoint(x, y)
 
 
-    def glPrimitiveAssembly(self, tVerts, tTexCoords):
-
-        # Esta función construye las primitivas de acuerdo con la
-        # opción de primitiva actual. De momento solo hay para triángulos
-
+    def glPrimitiveAssembly(self,tVerts, tTexCoords, tNormals):
         primitives = [ ]
-
         if self.primitiveType == TRIANGLES:
-            for i in range(0, len(tVerts), 3):
-                # Un tri+angulo contará con las posiciones de sus vértices y
-                # y sus UVs, seguidos uno tras otro.
+            for i in range(0,len(tVerts), 3):
+                
+                #Verts
+                verts =[]
+                verts.append(tVerts[i])
+                verts.append(tVerts[i+1])
+                verts.append(tVerts[i+2])
+                #TexCoords
+                texCoords = []
+                texCoords.append(tTexCoords[i])
+                texCoords.append(tTexCoords[i+1])
+                texCoords.append(tTexCoords[i+2])
+                #Normals
+                normals = []
+                normals.append(tNormals[i])
+                normals.append(tNormals[i+1])
+                normals.append(tNormals[i+2])
 
-                triangle = [ ]
-                # Verts
-                triangle.append( tVerts[i] )
-                triangle.append( tVerts[i + 1] )
-                triangle.append( tVerts[i + 2] )
-
-                # TexCoords
-                triangle.append( tTexCoords[i] )
-                triangle.append( tTexCoords[i + 1] )
-                triangle.append( tTexCoords[i + 2] )
+                triangle = [verts, texCoords, normals]
 
                 primitives.append(triangle)
-
+        
         return primitives
 
     #Frustum: lo que esta dentro de el, se renderiza.
@@ -333,10 +337,12 @@ class Renderer(object):
                 limit += 1
 
 
-    def glLoadModel(self, filename, textureName, translate = (0,0,0), rotate = (0,0,0), scale = (1,1,1)):
+    def glLoadModel(self, filename, textureName, textureName1=None, translate = (0,0,0), rotate = (0,0,0), scale = (1,1,1)):
         # Se crea el modelo y le asignamos su textura
         model = Model(filename, translate, rotate, scale)
         model.LoadTexture(textureName)
+        
+        
 
         # Se agrega el modelo al listado de objetos
         self.objects.append( model )
@@ -348,6 +354,7 @@ class Renderer(object):
 
         transformedVerts = []
         texCoords = []
+        normals = []
 
         # Para cada modelo en nuestro listado de objetos
         for model in self.objects:
@@ -420,14 +427,29 @@ class Renderer(object):
                     texCoords.append(vt2)
                     texCoords.append(vt3)
 
+                                #normales del modelo
+                vn0=model.normals[face[0][2] -1]
+                vn1=model.normals[face[1][2] -1]
+                vn2=model.normals[face[2][2] -1]
+
+                if vertCount == 4:
+                    vn3=model.normals[face[3][2] -1]
+
+                normals.append(vn0)
+                normals.append(vn1)
+                normals.append(vn2)
+
+                if vertCount == 4:
+                    normals.append(vn0)
+                    normals.append(vn2)
+                    normals.append(vn3)
         # Creamos las primitivas
-        primitives = self.glPrimitiveAssembly(transformedVerts, texCoords)       
+        primitives = self.glPrimitiveAssembly(transformedVerts, texCoords, normals)       
 
         # Para cada primitiva
         for prim in primitives:
             if self.primitiveType ==  TRIANGLES:
-                self.glTriangle(prim[0], prim[1], prim[2],
-                                prim[3], prim[4], prim[5])
+                self.glTriangle(prim[0], prim[1], prim[2])
         
 
 
