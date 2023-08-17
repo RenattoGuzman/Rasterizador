@@ -424,7 +424,7 @@ class Renderer(object):
             if self.primitiveType ==  TRIANGLES:
                 self.glTriangle(prim[0], prim[1], prim[2],
                                 prim[3], prim[4], prim[5])
-                print("triangulo ", primitives.index(prim) )
+                #("triangulo ", primitives.index(prim) )print
         
 
 
