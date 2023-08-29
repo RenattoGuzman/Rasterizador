@@ -16,6 +16,7 @@ def vertexShader(vertex, **kwargs):
           vertex[2],
           1]
 
+
     mMat = Multi.var_Mul_Matrix([vpMatrix, projectionMatrix, viewMatrix, modelMatrix])
     vt = Multi.mul_vector(mMat, vt)
 
@@ -73,6 +74,7 @@ def gouradShader(**kwargs):
     nA, nB, nC= kwargs["normals"]
     dLight = kwargs["dLight"]
     u, v, w= kwargs["bCoords"]
+    modelMatrix = kwargs["modelMatrix"]
 
     b = 1.0
     g = 1.0
@@ -89,20 +91,22 @@ def gouradShader(**kwargs):
 
     normal= (u * nA[0] + v * nB[0] + w * nC[0],
              u * nA[1] + v * nB[1] + w * nC[1],
-             u * nA[2] + v * nB[2] + w * nC[2])
+             u * nA[2] + v * nB[2] + w * nC[2],0)
     
-    negativedLight = (-dLight[0], -dLight[1], -dLight[2])
-    intensity = Multi.productoPunto(normal, negativedLight)
+    normal =  Multi.mul_vector(modelMatrix, normal)
+    
+    normal = [normal[0], normal[1], normal[2]]
+    
+    intensity = Multi.productoPunto(normal, dLight)
     
     b *= intensity
     g *= intensity
     r *= intensity
-
     if intensity > 0:
         return r, g, b
-
-    else:
+    if intensity < 0:
         return (0,0,0)
+
 
 def inverseShader(**kwargs):
     texture= kwargs["texture"]
@@ -175,3 +179,44 @@ def waterShader(**kwargs):
     b = min(max(b, 0), 1)
     
     return r, g, b
+
+
+def trashShader(**kwargs):
+    texture= kwargs["texture"]
+    tA, tB, tC= kwargs["texCoords"]
+    nA, nB, nC= kwargs["normals"]
+    dLight = kwargs["dLight"]
+    u, v, w= kwargs["bCoords"]
+    modelMatrix = kwargs["modelMatrix"]
+
+    b = 1.0
+    g = 1.0
+    r = 1.0
+
+    if texture != None:
+        tU= u * tA[0] + v * tB[0] + w * tC[0]
+        tV= u * tA[1] + v * tB[1] + w * tC[1]
+        
+        textureColor = texture.getColor(tU, tV)    
+        b *= textureColor[2]
+        g *= textureColor[1]
+        r *= textureColor[0]
+
+    normal= (u * nA[0] + v * nB[0] + w * nC[0],
+             u * nA[1] + v * nB[1] + w * nC[1],
+             u * nA[2] + v * nB[2] + w * nC[2],0)
+    
+    normal =  Multi.mul_vector(modelMatrix, normal)
+    
+    normal = [normal[0], normal[1], normal[2]]
+    
+    intensity = Multi.productoPunto(normal, dLight)
+    
+    b *= intensity
+    g *= intensity
+    r *= intensity
+    if intensity > 0:
+        return r, g +0.1, b
+    if intensity < 0:
+        return (0,0.1,0)
+

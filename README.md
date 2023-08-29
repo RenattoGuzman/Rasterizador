@@ -1,13 +1,14 @@
 # Rasterizador
 
-## Lab 2: Shaders
+## Proyecto 1
 
-Shader 1 (Inverse Shader)
+### Escenario:
 <br>
-<img src='inverseShader.bmp' width='300px'>
+Una calle con graffiti llena de basura y en el fondo un pinguino
+<br> 
 
-Shader 2 (Deep Fry Shader)
-<br><img src='deepFryShader.bmp' width='300px'>
+##### Render sin shaders
+<img src='output/no-shaders.bmp' width='400px'>
 
-Shader 3 (Water Shader)
-<br><img src='waterShader.bmp' width='300px'>
+#### Render con shaders
+<br><img src='output/con-shaders.bmp' width='400px'>

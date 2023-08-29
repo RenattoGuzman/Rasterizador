@@ -51,12 +51,13 @@ class Renderer(object):
         self.width = width
         self.height = height
 
-        self.glClearColor(0,0,0)
+        self.glClearColor(0.3,0.3,0.3)
         self.glClear()
-
         self.glColor(1,1,1)
 
         self.objects = []
+
+        self.background = None
 
         self.vertexShader = None
         self.fragmentShader = None
@@ -64,6 +65,7 @@ class Renderer(object):
         self.primitiveType = TRIANGLES
 
         self.activeTexture = None
+        self.activeModelMatrix = None
         
         self.glViewPort(0,0,self.width,self.height)
         self.glCamMatrix()
@@ -71,6 +73,9 @@ class Renderer(object):
         
         self.directionalLight = (1,0,0)
 
+    
+    def glDirectionalLight(self, dlLight):
+        self.directionalLight = dlLight
     
     def glClearColor(self, r, g, b):
         # Establecer el color de fondo
@@ -93,7 +98,26 @@ class Renderer(object):
         self.zbuffer = [[float('inf') for y in range(self.height)]
                        for x in range(self.width)]
 
-
+    
+        
+    def glBackgroundTexture(self, filename):
+        self.background = Texture(filename)
+   
+    def glClearBackground(self):
+        self.glClear()
+        
+        if self.background :
+            for x in range(self.vpX, self.vpX +self.vpWidth + 1):
+                for y in range(self.vpY, self.vpY +self.vpHeight + 1):
+                    
+                    u= (x-self.vpX) / self.vpWidth
+                    v=  (y-self.vpY) / self.vpHeight
+                    
+                    texColor = self.background.getColor(u, v)
+                    
+                    if texColor:
+                        self.glPoint(x, y, color(texColor[0], texColor[1],texColor[2]))
+            
     def glPoint(self, x, y, clr = None):
         # Si el valor de X y Y está dentro del ancho y alto del framebuffer,
         # dibujar el punto en la posición (x,y) del FrameBuffer.
@@ -138,25 +162,21 @@ class Renderer(object):
                             # Guardamos este valor de Z en el Z Buffer
                             self.zbuffer[x][y] = z
 
-                
                             # Si contamos un Fragment Shader, obtener el color de ahí.
-                            # Sino, usar el color preestablecido.
+                            # Sino, usar el color preestablecido
                             if self.fragmentShader != None:
                                 # Mandar los parámetros necesarios al shader
-                                
-                                
                                 
                                 colorP = self.fragmentShader(texture = self.activeTexture,
                                                              texCoords = texCoords,
                                                              normals = normals,
                                                              dLight = self.directionalLight,
-                                                             bCoords = bCoords)
-
-
-                                self.glPoint(x, y, color(colorP[0], colorP[1], colorP[2]))
+                                                             bCoords = bCoords,
+                                                             modelMatrix = self.activeModelMatrix)
                                 
+                                self.glPoint(x,y,color(colorP[0],colorP[1],colorP[2]))
                             else:
-                                self.glPoint(x, y)
+                                self.glPoint(x,y)
 
 
     def glPrimitiveAssembly(self,tVerts, tTexCoords, tNormals):
@@ -361,7 +381,7 @@ class Renderer(object):
 
             # Establecemos la textura y la matriz del modelo
             self.activeTexture = model.texture
-            mMat = self.glModelMatrix(model.translate, model.rotate, model.scale)
+            self.activeModelMatrix = self.glModelMatrix(model.translate, model.rotate, model.scale)
 
             # Para cada cara del modelo
             for face in model.faces:
@@ -381,23 +401,23 @@ class Renderer(object):
                 # necesarias para usarlas dentro del shader.
                 if self.vertexShader:
                     v0 = self.vertexShader(v0,
-                                           modelMatrix = mMat,
+                                           modelMatrix = self.activeModelMatrix,
                                            viewMatrix = self.viewMatrix,
                                            projectionMatrix = self.projectionMatrix,
                                            vpMatrix = self.vpMatrix)
                     
-                    v1 = self.vertexShader(v1, modelMatrix = mMat,
+                    v1 = self.vertexShader(v1, modelMatrix = self.activeModelMatrix,
                                            viewMatrix = self.viewMatrix,
                                            projectionMatrix = self.projectionMatrix,
                                            vpMatrix = self.vpMatrix)
                     
-                    v2 = self.vertexShader(v2, modelMatrix = mMat,
+                    v2 = self.vertexShader(v2, modelMatrix = self.activeModelMatrix,
                                            viewMatrix = self.viewMatrix,
                                            projectionMatrix = self.projectionMatrix,
                                            vpMatrix = self.vpMatrix)
                     
                     if vertCount == 4:
-                        v3 = self.vertexShader(v3, modelMatrix = mMat,
+                        v3 = self.vertexShader(v3, modelMatrix = self.activeModelMatrix,
                                            viewMatrix = self.viewMatrix,
                                            projectionMatrix = self.projectionMatrix,
                                            vpMatrix = self.vpMatrix)
