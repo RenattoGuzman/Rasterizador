@@ -1,5 +1,5 @@
 from math import pi, tan
-import mathLibrary as ml
+import mathLibrary as Multi
 
 class Raytracer(object):
     def __init__(self, screen):
@@ -84,7 +84,7 @@ class Raytracer(object):
                     pY *= self.topEdge
 
                     direction = (pX, pY, -self.nearPlane)
-                    direction = ml.vecNorm(direction)
+                    direction = Multi.vecNorm(direction)
 
                     intercept = self.rtCastRay(self.cameraPosition, direction)
                     if intercept is not None:
@@ -102,8 +102,8 @@ class Raytracer(object):
                                 if light.ligthType == "Directional":
                                     shadowDirection = [i * -1 for i in light.direction]
                                 if light.ligthType == "Point":
-                                    lightDirection = ml.twoVecSubstraction(light.position, intercept.point)
-                                    shadowDirection = ml.vecNorm(lightDirection)
+                                    lightDirection = Multi.twoVecSubstraction(light.position, intercept.point)
+                                    shadowDirection = Multi.vecNorm(lightDirection)
 
                                 shadowIntersect = self.rtCastRay(intercept.point, shadowDirection, intercept.obj)
 

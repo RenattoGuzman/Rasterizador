@@ -1,4 +1,4 @@
-import mathLibrary as ml
+import mathLibrary as Multi
 
 class Intercept(object):
   def __init__(self, distance, point, normal, obj):
@@ -24,9 +24,9 @@ class Sphere(Shape):
     super().__init__(position, material)
   
   def ray_intersect(self, origin, direction):
-    L = ml.twoVecSubstraction(self.position, origin)
-    lengthL = ml.vecNormSimple(L)
-    tca = ml.twoVecDot(L, direction)
+    L = Multi.twoVecSubstraction(self.position, origin)
+    lengthL = Multi.vecNormSimple(L)
+    tca = Multi.twoVecDot(L, direction)
     d = (lengthL**2 - tca**2)**0.5
 
     if d > self.radius:
@@ -43,13 +43,14 @@ class Sphere(Shape):
     if t0 < 0:
       return None
     
-    multi = ml.valVecMultiply(t0, direction)
-    #ml.twoVecMultiply(t0, direction)
-    P = ml.twoVecSum(origin, multi)
-    normal = ml.twoVecSubstraction(P, self.position)
-    normal = ml.vecNorm(normal)
+    multi = Multi.valVecMultiply(t0, direction)
+    #Multi.twoVecMultiply(t0, direction)
+    P = Multi.twoVecSum(origin, multi)
+    normal = Multi.twoVecSubstraction(P, self.position)
+    normal = Multi.vecNorm(normal)
 
     return Intercept(distance = t0,
                      point = P,
                      normal=normal,
                      obj=self)
+                     

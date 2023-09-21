@@ -1,4 +1,4 @@
-import mathLibrary as ml
+import mathLibrary as Multi
 
 class Light(object):
   def __init__(self, intensity = 1, color = (1,1,1), ligthType = "None"):
@@ -22,18 +22,18 @@ class AmbientLight(Light):
     super().__init__(intensity, color, "Ambient")
 
 def reflect(normal, direction):
-    reflectValue = [2 * ml.twoVecDot(normal, direction) * n - d for n, d in zip(normal, direction)]
-    return ml.vecNorm(reflectValue)
+    reflectValue = [2 * Multi.twoVecDot(normal, direction) * n - d for n, d in zip(normal, direction)]
+    return Multi.vecNorm(reflectValue)
 
 class DirectionalLight(Light):
     def __init__(self, direction=(0, 1, 0), intensity=1, color=(1, 1, 1)):
         super().__init__(intensity, color, "Directional")
-        self.direction = ml.vecNorm(direction)
+        self.direction = Multi.vecNorm(direction)
 
     def getDiffuseColor(self, intercept):
         direction = [i * -1 for i in self.direction]
 
-        intensity = ml.twoVecDot(intercept.normal, direction) * self.intensity
+        intensity = Multi.twoVecDot(intercept.normal, direction) * self.intensity
         intensity = max(0, min(1, intensity))
         intensity *= 1 - intercept.obj.material.Ks
 
@@ -44,10 +44,10 @@ class DirectionalLight(Light):
 
         reflectDirection = reflect(intercept.normal, direction)
 
-        viewDirection = ml.twoVecSubstraction(viewPosition, intercept.point)
-        viewDirection = ml.vecNorm(viewDirection)
+        viewDirection = Multi.twoVecSubstraction(viewPosition, intercept.point)
+        viewDirection = Multi.vecNorm(viewDirection)
 
-        intensity = max(0, min(1, ml.twoVecDot(reflectDirection, viewDirection))) ** intercept.obj.material.spec
+        intensity = max(0, min(1, Multi.twoVecDot(reflectDirection, viewDirection))) ** intercept.obj.material.spec
         intensity *= self.intensity
         intensity *= intercept.obj.material.Ks
 
@@ -59,11 +59,11 @@ class PointLight(Light):
         self.position = position
 
     def getDiffuseColor(self, intercept):
-        direction = ml.twoVecSubstraction(self.position, intercept.point)
-        radius = ml.vecNormSimple(direction)
-        direction = ml.vecNorm(direction)
+        direction = Multi.twoVecSubstraction(self.position, intercept.point)
+        radius = Multi.vecNormSimple(direction)
+        direction = Multi.vecNorm(direction)
 
-        intensity = ml.twoVecDot(intercept.normal, direction) * self.intensity
+        intensity = Multi.twoVecDot(intercept.normal, direction) * self.intensity
         intensity *= 1 - intercept.obj.material.Ks
 
         if radius != 0:
@@ -73,16 +73,16 @@ class PointLight(Light):
         return [i * intensity for i in self.color]
 
     def getSpecularColor(self, intercept, viewPosition):
-        direction = ml.twoVecSubstraction(self.position, intercept.point)
-        radius = ml.vecNormSimple(direction)
-        direction = ml.vecNorm(direction)
+        direction = Multi.twoVecSubstraction(self.position, intercept.point)
+        radius = Multi.vecNormSimple(direction)
+        direction = Multi.vecNorm(direction)
 
         reflectDirection = reflect(intercept.normal, direction)
 
-        viewDirection = ml.twoVecSubstraction(viewPosition, intercept.point)
-        viewDirection = ml.vecNorm(viewDirection)
+        viewDirection = Multi.twoVecSubstraction(viewPosition, intercept.point)
+        viewDirection = Multi.vecNorm(viewDirection)
 
-        intensity = max(0, min(1, ml.twoVecDot(reflectDirection, viewDirection))) ** intercept.obj.material.spec
+        intensity = max(0, min(1, Multi.twoVecDot(reflectDirection, viewDirection))) ** intercept.obj.material.spec
         intensity *= self.intensity
         intensity *= intercept.obj.material.Ks
 
