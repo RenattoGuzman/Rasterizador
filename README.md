@@ -1,13 +1,5 @@
-# Rasterizador
+# RayTracer
 
-## Ilustración con relleno
+## Resultado
 
-
-![Ilustración con relleno](https://github.com/RenattoGuzman/Rasterizador/blob/Lab1/outputColor.bmp)
-
-
-
-## Ilustración sin relleno
-
-
-![Ilustración sin relleno](https://github.com/RenattoGuzman/Rasterizador/blob/Lab1/output1.bmp)
+![Ilustración con relleno](https://github.com/RenattoGuzman/Rasterizador/blob/RT3/resultado.jpg)
