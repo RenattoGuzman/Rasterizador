@@ -2,4 +2,4 @@
 
 ## Resultado
 
-![pinguino gif](pinguin.gif)
+![pinguino gif](pinguinoShaders.gif)

@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+import glm
 from gl import Renderer
 from model import Model
 from shaders import *
@@ -17,25 +18,10 @@ rend = Renderer(screen)
 
 rend.setShaders(vertex_shader, fragment_shader)
 
-""" #               POSITIONS           COLOR
-triangleData = [-0.5, -0.5, 0.0,    1.0,0.0,0.0,
-                0, 0.5, 0.0,        0.0,1.0,0.0,
-                0.5, -0.5, 0.0,     0.0,0.0,1.0,
-                
-                -0.5, -0.5, 0.0,    1.0,0.0,0.0,
-                0, 0.5, 0.0,        0.0,1.0,0.0,
-                0.5, -0.5, 0.0,     0.0,0.0,1.0] """
 
-# #               POSITIONS           UVs         NORMALS
-# triangleData = [-0.5, -0.5, 0.0,    0.0,0.0,    1.0,0.0,0.0,
-#                 -0.5, 0.5, 0.0,     0.0,1.0,    1.0,0.0,0.0,
-#                 0.5, -0.5, 0.0,     1.0,0.0,    1.0,0.0,0.0,
-                
-#                 -0.5, 0.5, 0.0,     0.0,1.0,    1.0,0.0,0.0,
-#                 0.5, 0.5, 0.0,      1.0,1.0,    1.0,0.0,0.0,
-#                 0.5, -0.5, 0.0,     1.0,0.0,    1.0,0.0,0.0]
+obj1 = rend.loadModel(filename = "pinguin.obj", texture = "animals.bmp", position = (0,-0.72,-2))
 
-obj1 = rend.loadModel(filename = "pinguin.obj", texture = "animals.bmp", position = (0,-2,-5))
+rend.target = obj1.position
 
 isRunning = True
 while isRunning:
@@ -50,6 +36,24 @@ while isRunning:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 isRunning = False
+            elif event.key == pygame.K_SPACE:
+                rend.toggleFilledMode()
+                
+            elif event.key == pygame.K_1:
+                rend.setShaders(vertex_shader, fragment_shader)
+                print("                                    Shader original")
+            elif event.key == pygame.K_2:
+                rend.setShaders(vertex_shader, platinum_shader)
+                print("                                    Platinum Shader")
+            elif event.key == pygame.K_3:
+                rend.setShaders(vertex_shader, disco_shader)
+                print("                                    Disco Shader")
+            elif event.key == pygame.K_4:
+                rend.setShaders(vertex_shader, semaforo_shader)
+                print("                                    Semaforo Shader")
+            elif event.key == pygame.K_5:
+                rend.setShaders(vertex_shader, candle_shader) 
+                print("                                    Candle Shader")           
 
     #5 unidades por segundo
     if keys[K_d]:
@@ -62,7 +66,7 @@ while isRunning:
         rend.camPosition.y -= 5 * deltaTime
          
     elif keys[K_s]:
-        rend.camPosition.y+= 5 * deltaTime
+        rend.camPosition.y += 5 * deltaTime
             
     if keys[K_q]:
         rend.camPosition.z += 5 * deltaTime
@@ -76,10 +80,14 @@ while isRunning:
         obj1.rotation.y += 45 * deltaTime 
          
     elif keys[K_LEFT]:
-        obj1.rotation.y -= 45 * deltaTime
-            
+        obj1.rotation.y -= 135 * deltaTime 
+        
+    elif keys[K_UP]:
+        obj1.rotation.y -= 45* deltaTime        
+        
     rend.elapsedTime += deltaTime
         
+    rend.update()
     rend.render()
     
     pygame.display.flip()

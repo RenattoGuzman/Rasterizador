@@ -2,6 +2,7 @@
 #pip install PyGLM
 #Libreria matematica compatible con OpenGL.
 
+from typing import Self
 import glm
 from obj import Obj
 from model import Model
@@ -20,10 +21,16 @@ class Renderer(object):
         self.clearColor = [0,0,0]
         
         glEnable(GL_DEPTH_TEST)
-        glPolygonMode(GL_FRONT, GL_FILL)
+        glEnable(GL_CULL_FACE)
         glViewport(0,0,self.width, self.height)
         
         self.elapsedTime = 0.0
+        
+        self.target = glm.vec3(0,0,0)
+        
+        self.fatness = 0.0
+        
+        self.filledMode = True
 
         self.scene = []
         
@@ -34,13 +41,24 @@ class Renderer(object):
         #View Matrix
         self.camPosition = glm.vec3(0,0,0)
         self.camRotation = glm.vec3(0,0,0)
-        
+        self.viewMatrix = self.getViewMatrix()      
+
         #Projection Matrix
         self.projectionMatrix = glm.perspective(glm.radians(60),            #FOV
                                                 self.width/self.height,     #Aspect Ratio
                                                 0.1,                        #Near Plane
                                                 1000)                       #Far Plane
+    
+    def toggleFilledMode(self):
+        self.filledMode = not self.filledMode
         
+        if self.filledMode:
+            glEnable(GL_CULL_FACE)
+            glPolygonMode(GL_FRONT, GL_FILL)
+        else:
+            glDisable(GL_CULL_FACE)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+            
     def getViewMatrix(self):
         identity = glm.mat4(1)
         
@@ -68,6 +86,10 @@ class Renderer(object):
             self.activeShader = None
     
 
+    def update(self):
+        self.viewMatrix = self.getViewMatrix()
+        #self.viewMatrix = glm.lookAt(self.camPosition, self.target, glm.vec3(0,1,0))
+        
     def loadModel(self, filename, texture, position = (0,0,-5), rotation = (0,0,0), scale = (1,1,1)):
         model = Obj(filename)
         
@@ -142,12 +164,13 @@ class Renderer(object):
             glUseProgram(self.activeShader)
             
             glUniformMatrix4fv(glGetUniformLocation(self.activeShader, "viewMatrix"),
-                               1, GL_FALSE, glm.value_ptr(self.getViewMatrix()))
+                               1, GL_FALSE, glm.value_ptr(self.viewMatrix))
             
             glUniformMatrix4fv(glGetUniformLocation(self.activeShader, "projectionMatrix"),
                                1, GL_FALSE, glm.value_ptr(self.projectionMatrix))
 
             glUniform1f(glGetUniformLocation(self.activeShader, "time"), self.elapsedTime)
+            glUniform1f(glGetUniformLocation(self.activeShader, "fatness"), self.fatness)
             
             glUniform3fv(glGetUniformLocation(self.activeShader, "dirLight"), 1, glm.value_ptr(self.dirLight))
                     
