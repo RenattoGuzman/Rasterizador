@@ -90,6 +90,13 @@ class Renderer(object):
         self.viewMatrix = self.getViewMatrix()
         #self.viewMatrix = glm.lookAt(self.camPosition, self.target, glm.vec3(0,1,0))
         
+
+    def deleteModel(self, model):
+        if model in self.scene:
+            self.scene.remove(model)
+
+        
+    
     def loadModel(self, filename, texture, position = (0,0,-5), rotation = (0,0,0), scale = (1,1,1)):
         model = Obj(filename)
         

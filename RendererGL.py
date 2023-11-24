@@ -19,7 +19,7 @@ rend = Renderer(screen)
 rend.setShaders(vertex_shader, fragment_shader)
 
 
-obj1 = rend.loadModel(filename = "pinguin.obj", texture = "animals.bmp", position = (0,-0.72,-2))
+obj1 = rend.loadModel(filename = "models/pinguin.obj", texture = "textures/animals.bmp", position = (0,-0.72,-2))
 
 rend.target = obj1.position
 
@@ -40,16 +40,27 @@ while isRunning:
                 rend.toggleFilledMode()
                 
             elif event.key == pygame.K_1:
-                rend.setShaders(vertex_shader, fragment_shader)
+
+                rend.deleteModel(obj1)
+                obj1 = rend.loadModel(filename="models/pinguin.obj", texture="textures/animals.bmp", position=(0, -0.72, -2), scale=(1.2,1.2,1.2))
+                #rend.setShaders(vertex_shader, fragment_shader)
                 print("                                    Shader original")
             elif event.key == pygame.K_2:
-                rend.setShaders(vertex_shader, platinum_shader)
+                rend.deleteModel(obj1)
+                obj1 = rend.loadModel(filename = "models/Mjollnir Blender OBJ.obj", texture = "textures/Mjollnir_BaseColor.png", position = (0,0,-2), scale=(0.4,0.4,0.4))
+                
                 print("                                    Platinum Shader")
             elif event.key == pygame.K_3:
-                rend.setShaders(vertex_shader, disco_shader)
+                rend.deleteModel(obj1)
+                obj1 = rend.loadModel(filename = "models/GLOCK 19 F T.obj", texture = "textures/GLOCK_TEXTURE.png", position = (-0.5,0.5,-2), scale=(0.4,0.4,0.4))
+                
+                #rend.setShaders(vertex_shader, disco_shader)
                 print("                                    Disco Shader")
             elif event.key == pygame.K_4:
-                rend.setShaders(vertex_shader, semaforo_shader)
+                rend.deleteModel(obj1)
+                obj1 = rend.loadModel(filename = "models/imperial shuttle in flight.obj", texture = "textures/ship.png", position = (0,0.5,-2), scale=(0.4,0.4,0.4))
+
+                #rend.setShaders(vertex_shader, semaforo_shader)
                 print("                                    Semaforo Shader")
             elif event.key == pygame.K_5:
                 rend.setShaders(vertex_shader, candle_shader) 

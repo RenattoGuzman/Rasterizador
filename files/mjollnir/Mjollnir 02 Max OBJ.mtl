@@ -1,0 +1,21 @@
+# 3ds Max Wavefront OBJ Exporter v0.99 - (c)2007 guruware
+# File Created: 20.11.2023 12:04:59
+
+newmtl Mjollnir
+	Kd 0.8000 0.8000 0.8000
+	Ks 0.8000 0.8000 0.8000
+	Tr 0.0000
+	d 1.0000
+	Tf 0.0000 0.0000 0.0000
+	Pr 0.5356
+	Pm 0.0000
+	Pc 0.0000
+	Pcr 0.0000
+	Ni 1.5200
+	illum 2
+	map_Kd Mjollnir_BaseColor.png
+	map_Pr Mjollnir_Roughness.png
+	map_Pm Mjollnir_Metallic.png
+	map_Ke Mjollnir_Emission.png
+	disp Mjollnir_Displacement.png
+	norm Mjollnir_Normal.png
