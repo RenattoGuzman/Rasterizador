@@ -2,10 +2,8 @@ import subprocess
 import pygame
 import sys
 
-# Initialize Pygame
 pygame.init()
 
-# Set up display
 width, height = 800, 600
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Proyecto 3")
@@ -14,8 +12,7 @@ pygame.mixer.music.load("Christmas.mp3")
 pygame.mixer.music.play(-1)
 
 
-
-# Colors
+# Colores
 white = (255, 255, 255)
 black = (0, 0, 0)
 
@@ -23,7 +20,7 @@ black = (0, 0, 0)
 font = pygame.font.Font(None, 36)
 title_font = pygame.font.Font(None, 72)
 
-# Define the menu state
+
 class Menu:
     def __init__(self):
         
@@ -61,7 +58,7 @@ class Menu:
             if self.info_button.collidepoint(event.pos):
                 self.click_sound.play()
                 return Info()
-        return self  # If no state change, return the current instance
+        return self  
 
 class Info:
     def __init__(self):
@@ -87,7 +84,7 @@ class Info:
             if self.click_count == 3:
                 return Menu()
 
-        return self  # If no state change, return the current instance
+        return self  
 
 
 class Main:
@@ -103,7 +100,7 @@ class Main:
         screen.blit(self.game_text, self.game_rect)
 
     def handle_event(self, event):
-        script_path = "RendererGL.py"  # Replace with the actual path
+        script_path = "RendererGL.py"
         self.count = 0
         
 
@@ -115,19 +112,17 @@ class Main:
             
             return Menu()
 
-        return self  # If no state change, return the current instance
+        return self 
 
-# Set initial state to the menu
 current_state = Menu()
 
-# Main game loop
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-        # Handle events in the current state
         current_state = current_state.handle_event(event)
 
     current_state.draw()
